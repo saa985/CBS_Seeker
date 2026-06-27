@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBS ASSISTANT</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Enriqueta:wght@700&family=Sorts+Mill+Goudy&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            background: #252528;
+            color: white;
+        }
+        
+        #main {
+            margin-top: 50px;
+            background:#dd0001;
+            padding:2%;
+            overflow: scroll;
+            
+        }
+        input.form-control {
+            background: white;
+            color: black;
+            border: 1px solid black; 
+            outline: none;
+        }
+        
+        #mainb {
+            background: aliceblue;
+            color: black;
+            padding:2%;
+            border:1px solid white; 
+            border-radius:16px;
+            text-align: center;
+            overflow: scroll;
+        }
+        
+        #mainb .col{
+            border: 1px solid black;
+            padding:2%;
+        }
+        
+        #mainb .row:hover{
+            background:pink;
+            color: black; 
+            font-weight: bold; 
+            transition: 0.5s;
+        }
+        
+        #help {
+            border-radius:50%;
+            font-weight:bold;
+            
+        }
+        
+        .card {
+            color:black;
+            width:100%;
+            text-align:left;
+            background: white;
+            overflow: auto;
+            
+            position: fixed;
+            border-radius:50px 0px 50px 50px;
+            
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container" id="main">
+    <div class="row">
+        <div class="col">
+            <h5>Number seeker</h5>
+        </div>
+        <div class="col" style="text-align:right;">
+            <button id="help" class="btn btn-warning">?</button>
+        </div>
+    </div>
+    
+    <div id="para">
+         <div class="card" style="display:none;">
+             <div class="card-header">
+                 <br><h5>About Site</h5>
+             </div>
+             <div class="card-body">
+                 <p>This is Informational site, which provides the bus details that departure from City bus stand. Which might reduce the traveling stress and ensure time efficiency. Even though the all data here collected from CBS boards, some local events or other situations might change the data temporarily or permanently. So ask conductor once before take the bus.<br><hr>This site made by Web Developer<br> <b style="color:red;">Samskruth Asur</b></p>
+                 <br>
+                 <div class="d-grid gap-2">
+                     <button id="clhl" class="btn btn-danger">CLOSE</button>
+                <br> </div>
+             </div>
+         </div>
+     </div>
+    
+    <hr>
+    <div class="row">
+        <div class="col">
+            <p>Select Location</p>
+        </div>
+        <div class="col">
+            <input list="id_name" name="input_name" class="form-control" placeholder="Type to search.." id="name">
+            
+            <datalist id="id_name"></datalist>
+        </div>
+    </div>
+    <br>
+    <div class="d-grid gap-2">
+        <button class="btn btn-light" id="sb">Seek</button>
+        <button class="btn btn-light" id="cl">Clear</button>
+    </div>
+    
+</div>
+<br><br>
+<div class="container" id="mainb" style="display: none;">
+    <h5>Bus Details</h5><hr>
+    <div class="row">
+        <div class="col">
+            <p>Platform Number</p>
+        </div>
+        <div class="col">
+            <span id="pn"></span>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col">
+            <p>Bus Number</p>
+        </div>
+        <div class="col">
+            <span id="bn"></span>
+        </div>
+    </div><hr>
+    <small style="text-align:center;font-size:11px;">Information purpose only, ask conductor once to confirm.</small>
+</div>
+
+
+
+<script>
+   
+    const locations = ["Adalita tarabethi samsthe", "Agrahara", "Agrahara Circle", "Akashvani", "Akshya Bhandar", "Andholana Circle", "Appolo Hospital", "Ashoka Circle","Bapuji Nagara","Bandipalya","Balllahalli", "Basavanagudi", "Belagola","BEML Nagara","Bharath Cancer Hospital", "Bidaragudu", "Bogadi 2nd Stage","Central hospital", "Chamundipuram", "Complex", "Coorgally", "Dasappa Circle", "Devaiahnahundi", "Doctors Corner", "ESI", "Galigarahundi", "Ganesh Bhandar", "Gokulam Aralimara", "Gun house", "Goruru","Hadajana", "Hallikerehundi", "Hampapura", "Hanchya", "Hebbadi", "Hebbal", "Highway Circle", "Hinakal", "Hootagally", "Hosa hundi", "Hunasemara", "Infosys", "J.P Nagar", "Janatha nagar", "Jantagalli", "Jayanagara", "Jnanaganga School", "Jockey quarters", "Jodi bevinamara", "K.E.B RMP", "Kadakola", "Kalamandir", "Kalisiddanahundi", "Kamakshi Hospital", "Kanakagiri", "Kiralu","Kergahalli", "Koodanahalli", "Kumbarakoppal", "Kuvempu Nagar Depot", "Lakshmi Kantha Nagar", "Lakshmi Talkies","Lingabudi Palya", "M Block", "Mahamane", "Makanahundi", "Marashettahalli", "Metropole", "Modelhouse", "Mosambayanahalli", "Mysore Rural Bus Stand", "Naganahalli", "Nanjumalige Circle", "Nethaji Circle", "Nirmala Convent", "P.K. Sanitorium", "P.V.K. Acharya Bhavana", "Palahalli", "Paparam House", "Police Station","Prashantha Nagar" ,"Premier Studio", "Pump House", "Railway Station", "Rajarajesman Nagar", "Ramaswamy Circle","Ramkrishna nagar", "Rammanahalli","Ramanahundi","Ramabainagara","RMC", "RTO", "Ruby bakari", "Sa.ra. Mahesh Choultry", "Saint Mary's Convent", "Sankethi School", "Sankranthi Circle", "Santhemala", "Satgalli bus stand", "Shaantinagara", "Shadanahalli","Shankaranagara", "Shanthisagar Complex", "Sharadadevinagar", "Sidappa Square", "Siddaramaiahna Circle","Somanatha Nagara","Srirampura 2nd Stage","Sterling", "Stone Building", "Surya Bakery", "Suyoga Hospital", "Swamy Vivekanandangar Circle", "Tandavaura", "Thavarekatte", "Udayagiri", "Under Bridge", "Uttanahalli", "Vidyaranyapuram", "Vijayanagar Water Tank", "Visweshwaranagar", "Vontikoppal", "Zoo"];
+    
+
+
+
+
+    // 2. This function automatically creates the <option> tags for you
+    const dataList = document.getElementById('id_name');
+
+    locations.forEach(item => {
+        let option = document.createElement('option');
+        option.value = item;
+        dataList.appendChild(option);
+    });
+    
+    $("#sb").click(function(){
+    
+    
+    
+      const busNo = {"Agrahara": "51B, 11A, 11D, 62, 65, 91",
+"Agrahara Circle": "91",
+"Akashvani": "111, 118, 120, 118A, 100",
+"Akshya Bhandar": "94, 94B, 51A, 51B, 62, 91",
+"Andholana Circle": "62, 65",
+"Ashoka Circle": "94, 94B, 51A, 51B, 62, 65, 91",
+"B.C.H (Bharath Cancer Hospital)": "119B, 116A, 133",
+"Bapuji Nagara": "69C",
+"Basavanagudi": "119B, 119",
+"Balllahalli": "91",
+"BEML Nagara": "94",
+"Bharath Cancer Hospital": "118, 118A",
+"Bidaragudu": "212",
+"Bogadi 2nd Stage": "51A, 51B",
+"Chamundi Hill": "201",
+"Complex": "62, 65",
+"Coorgally": "100, 116A, 133",
+"Dasappa Circle": "116",
+"Devaiahnahundi": "60,80,81,82R",
+"Doctors Corner": "118, 118A",
+"ESI": "100, 119",
+"Ganesh Bhandar": "51A, 51B",
+"Gokulam Aralimara": "118, 118A, 100, 116",
+"Goruru": "11A, 11D",
+"Highway Circle": "133",
+"Infosys": "116A, 119, 133",
+"J.P Nagar": "11D",
+"Janatha nagar": "51A, 51B",
+"Jnanaganga School": "94, 94B, 65",
+"Jocky Quarters": "201, 100",
+"Kalisiddanahundi": "212",
+"Kamakshi Hospital": "51A, 51B, 69C, 91",
+"Kanakagiri": "11A",
+"Kergahalli": "91",
+"Kiralu": "204",
+"Kumbarakoppal": "111, 118, 120, 118A",
+"L&T": "116A, 133",
+"Lakshmi Kantha Nagar": "119B, 133",
+"Lakshmi Talkies": "94, 94B, 51A, 69C",
+"Lingabudi Palya": "94B",
+"M Block": "94, 94B",
+"Mahamane": "65",
+"Makanahundi": "211K",
+"Metropole": "118, 118A",
+"Modelhouse": "118, 118A",
+"Mysore Rural Bus Stand": "111, 118, 120, 118A, 116",
+"Naganahalli": "111, 118, 120",
+"Nanjumalige Circle": "11A, 11D",
+"Nethaji Circle": "65",
+"Nirmala Convent": "118, 118A",
+"P.K. Sanitorium": "111, 118, 120, 118A, 119B, 119",
+"Paparam House": "118, 118A",
+"Police Station": "62",
+"Prashantha Nagar": "51A, 51B",
+"Railway Station": "111, 118, 120, 118A, 116",
+"Rajarajeshwari Nagar": "69C, 91",
+"Ramabainagara": "11A, 11D, 155",
+"Ramakrishna Nagara": "62",
+"Ramanahundi": "91",
+"Ramaswamy Circle": "51A",
+"RMC": "116A, 133",
+"R.T.O": "51B",
+"Sankranthi Circle": "118, 118A, 119B, 119",
+"Shadanahalli": "111, 118, 120",
+"Shankaranagara": "94B",
+"Shanthisagar Complex": "94, 94B",
+"Sharadadevinagar": "51A, 51B, 91",
+"Sidappa Square": "11A, 11D",
+"Somanatha Nagara": "65",
+"Srirampura 2nd Stage": "94",
+"Sterling": "11A",
+"Stone Building": "51A, 51B, 91",
+"Surya Bakery": "118, 118A, 119B, 119",
+"Suyoga Hospital": "62",
+"Swamy Vivekanandangar Circle": "94, 94B",
+"Uttanahalli": "203, 203A",
+"Vidyaranyapuram": "11A, 11D",
+"Vijayanagar Water Tank": "118, 118A, 100, 119",
+"Visweshwaranagar": "11D",
+"Zoo": "201, 100",
+
+
+
+
+
+
+"Appolo Hospital": "62, 65",
+"Ashoka Circle": "51A, 51B, 62, 65, 91, 94, 94B",
+"Bandipalya": "212",
+"Basavanagudi": "119, 119B",
+"Belagola": "303",
+"BEML Nagara": "94",
+"Bharath Cancer Hospital": "118, 118A",
+"Bidaragudu": "212",
+"Central hospital": "110, 110B, 110C",
+"Chamundipuram": "100, 201",
+"Coorgally": "100, 116A, 133, 303A",
+"Dasappa Circle": "116, 303, 303A",
+"Doctors Corner": "118, 118A",
+"ESI": "100, 119, 303",
+"Galigarahundi": "110C",
+"Ganesh Bhandar": "51A, 51B",
+"Gokulam Aralimara": "100, 116, 118, 118A",
+"Hadajana": "212",
+"Hallikerehundi": "212",
+"Hampapura": "110B",
+"Hanchya": "110C",
+"Hebbadi": "110B",
+"Hebbal": "116, 117, 118",
+"Highway Circle": "133",
+"Hinakal": "303A",
+"Hootagally": "303A",
+"Hosa hundi": "212",
+"Hunasemara": "60",
+"Infosys": "116A, 119, 133",
+"J.P Nagar": "11D",
+"Janatha nagar": "51A, 51B",
+"Jantagalli": "212",
+"Jayanagara": "62, 68",
+"Jnanaganga School": "65, 94, 94B",
+"Jocky Quarters": "100, 201",
+"K.E.B RMP": "62",
+"Kadakola": "212",
+"Kalisiddanahundi": "110, 110B, 212",
+"Kamakshi Hospital": "51A, 51B, 69C, 91",
+"Kanakagiri": "11A",
+"Kiralu": "204",
+"Koodanahalli": "212",
+"Kumbarakoppal": "111, 118, 118A, 120",
+"Kuvempu Nagar Depot": "68, 80",
+"Lakshmi Kantha Nagar": "119B, 133",
+"Lakshmi Talkies": "51A, 69C, 94, 94B, 303",
+"M Block": "94, 94B",
+"Mahamane": "65",
+"Makanahundi": "211K",
+"Marashettahalli": "212",
+"Metropole": "118, 118A",
+"Modelhouse": "118, 118A",
+"Mysore Rural Bus Stand": "110, 110B, 110C, 111, 116, 118, 118A, 120, 303A",
+"Naganahalli": "111, 118, 120",
+"Nanjumalige Circle": "11A, 11D",
+"Nethaji Circle": "65",
+"Nirmala Convent": "118, 118A",
+"P.K. Sanitorium": "111, 118, 118A, 119, 119B, 120, 303",
+"Palahalli": "303",
+"Paparam House": "118, 118A",
+"Police Station": "62, 303",
+"Premier Studio": "303A",
+"Pump House": "303",
+"Railway Station": "111, 116, 118, 118A, 120, 303A",
+"Rammanahalli": "110, 110B, 110C",
+"Ramaswamy Circle": "51A, 303",
+"RMC": "116A, 133",
+"RTO": "51B",
+"Sankranthi Circle": "118, 118A, 119, 119B",
+"Santhemala": "303",
+"Satgalli bus stand": "110, 110B, 110C",
+"Shaantinagara": "110, 110B, 110C",
+"Shadanahalli": "111, 118, 120",
+"Shankaranagara": "94B",
+"Shanthisagar Complex": "94, 94B",
+"Sharadadevinagar": "51A, 51B, 91",
+"Siddaramaiahna Circle":"94B",
+"Sidappa Square": "11A, 11D",
+"Somanatha Nagara": "65",
+"Srirampura 2nd Stage": "94",
+"Sterling": "11A",
+"Stone Building": "51A, 51B, 91",
+"Surya Bakery": "118, 118A, 119, 119B",
+"Suyoga Hospital": "62",
+"Swamy Vivekanandangar Circle": "94, 94B",
+"Tandavaura": "212",
+"Thavarekatte": "201",
+"Udayagiri": "110, 110B, 110C",
+"Under Bridge": "62",
+"Uttanahalli": "203, 203A",
+"Vidyaranyapuram": "11A, 11D",
+"Vijayanagar Water Tank": "100, 118, 118A, 119",
+"Visweshwaranagar": "11D",
+"Vontikoppal": "116, 119",
+"Zoo": "100, 201"
+
+};
+
+const busPt ={"Agrahara": "14, 15, 17, 18",
+"Agrahara Circle": "17",
+"Akashvani": "1, 2, 3",
+"Akshya Bhandar": "15, 17, 18, 20",
+"Andholana Circle": "18",
+"Ashoka Circle": "20, 15, 18, 17",
+"B.C.H (Bharath Cancer Hospital)": "1",
+"Bapuji Nagara": "17",
+"Basavanagudi": "1",
+"Balllahalli": "17",
+"BEML Nagara": "20",
+"Bharath Cancer Hospital": "2",
+"Bidaragudu": "29",
+"Bogadi 2nd Stage": "15",
+"Chamundi Hill": "23",
+"Complex": "18",
+"Coorgally": "1",
+"Dasappa Circle": "1",
+"Doctors Corner": "2",
+"Devaiahnahundi": "19",
+"ESI": "1",
+"Ganesh Bhandar": "15",
+"Gokulam Aralimara": "2, 1",
+"Goruru": "14",
+"Highway Circle": "1",
+"Hunasemara": "19",
+"Infosys": "1",
+"J.P Nagar": "14",
+"Janatha nagar": "15",
+"Jnanaganga School": "20, 18",
+"Jocky Quarters": "23",
+"Kalisiddanahundi": "29",
+"Kamakshi Hospital": "15, 17",
+"Kanakagiri": "14",
+"Kergahalli": "17",
+"Kiralu": "29",
+"Kumbarakoppal": "3, 2",
+"Lingabudi Palya": "20",
+"L&T": "1",
+"Lakshmi Kantha Nagar": "1",
+"Lakshmi Talkies": "20, 15, 17",
+"M Block": "20",
+"Mahamane": "18",
+"Makanahundi": "29",
+"Metropole": "2",
+"Modelhouse": "2",
+"Mysore Rural Bus Stand": "3, 2, 1",
+"Naganahalli": "3",
+"Nanjumalige Circle": "14",
+"Nethaji Circle": "18",
+"Nirmala Convent": "2",
+"P.K. Sanitorium": "3, 2, 1",
+"Paparam House": "2",
+"Police Station": "18",
+"Prashantha Nagar": "15",
+"Railway Station": "3, 2, 1",
+"Rajarajeshwari Nagar": "17",
+"Ramabainagara": "14",
+"Ramakrishna Nagar": "18",
+"Ramanahundi": "17",
+"Ramaswamy Circle": "15",
+"RMC": "1",
+"RTO": "15",
+"Sankranthi Circle": "2, 1",
+"Shadanahalli": "3",
+"Shankaranagara": "20",
+"Shanthisagar Complex": "20",
+"Sharadadevinagar": "15, 17",
+"Sidappa Square": "14",
+"Siddaramaiahna Circle":"20",
+"Somanatha Nagara": "18",
+"Srirampura 2nd Stage": "20",
+"Sterling": "14",
+"Stone Building": "15, 17",
+"Surya Bakery": "2, 1",
+"Suyoga Hospital": "18",
+"Swamy Vivekanandangar Circle": "20",
+"Uttanahalli": "29",
+"Vidyaranyapuram": "14",
+"Vijayanagar Water Tank": "2, 1",
+"Visveshwaranagar": "14",
+"Zoo": "23",
+
+"Agrahara": "14, 15, 17, 18",
+"Agrahara Circle": "17",
+"Akashvani": "1, 2, 3, 22",
+"Akshaya Bhandar": "15, 17, 18, 20",
+"Andholana Circle": "18",
+"Appolo Hospital": "18",
+"Ashoka Circle": "15, 17, 18, 20",
+"B.C.H (Bharath Cancer Hospital)": "1",
+"Bandipalya": "29",
+"Basavanagudi": "1",
+"Belagola": "22",
+"BEML Nagara": "20",
+"Bharath Cancer Hospital": "2",
+"Bidaragudu": "29",
+"Central hospital": "26",
+"Chamundipuram": "23, 28",
+"Coorgally": "1, 22",
+"Dasappa Circle": "1, 22",
+"Doctors Corner": "2",
+"ESI": "1, 22",
+"Galigarahundi": "26",
+"Ganesh Bhandar": "15",
+"Gokulam Aralimara": "1, 2",
+"Hadajana": "29",
+"Hallikerehundi": "29",
+"Hampapura": "26",
+"Hanchya": "26",
+"Hebbadi": "26",
+"Hebbal": "1, 2",
+"Highway Circle": "1",
+"Hinakal": "22",
+"Hootagally": "22",
+"Hosa hundi": "29",
+"Infosys": "1",
+"J.P Nagar": "14",
+"Janatha nagar": "15",
+"Jantagalli": "29",
+"Jayanagara": "15, 18",
+"Jnanaganga School": "18, 20",
+"Jocky Quarters": "23",
+"K.E.B RMP": "18",
+"Kadakola": "29",
+"Kalisiddanahundi": "26, 29",
+"Kamakshi Hospital": "15, 17",
+"Kanakagiri": "14",
+"Kiralu": "29",
+"Koodanahalli": "29",
+"Kumbarakoppal": "2, 3",
+"Kuvempu Nagar Depot": "15",
+"Lakshmi Kantha Nagar": "1",
+"Lakshmi Talkies": "15, 17, 20, 22",
+"M Block": "20",
+"Mahamane": "18",
+"Makanahundi": "29",
+"Marashettahalli": "29",
+"Metropole": "2",
+"Modelhouse": "2",
+"Mysore Rural Bus Stand": "1, 2, 3, 22, 26",
+"Naganahalli": "3",
+"Nanjumalige Circle": "14",
+"Nethaji Circle": "18",
+"Nirmala Convent": "2",
+"P.K. Sanitorium": "1, 2, 3, 22",
+"Palahalli": "22",
+"Paparam House": "2",
+"Police Station": "18, 22",
+"Premier Studio": "22",
+"Pump House": "22",
+"Railway Station": "1, 2, 3, 22",
+"Rammanahalli": "26",
+"Ramaswamy Circle": "15, 22",
+"RMC": "1",
+"R.T.O": "15",
+"Sankranthi Circle": "1, 2",
+"Santhemala": "22",
+"Satgalli bus stand": "26",
+"Shaantinagara": "26",
+"Shadanahalli": "3",
+"Shankaranagara": "20",
+"Shanthisagar Complex": "20",
+"Sharadadevinagar": "15, 17",
+"Sidappa Square": "14",
+"Somanatha Nagara": "18",
+"Srirampura 2nd Stage": "20",
+"Sterling": "14",
+"Stone Building": "15, 17",
+"Surya Bakery": "1, 2",
+"Suyoga Hospital": "18",
+"Swamy Vivekanandangar Circle": "20",
+"Tandavaura": "29",
+"Thavarekatte": "23",
+"Udayagiri": "26",
+"Under Bridge": "18",
+"Uttanahalli": "28",
+"Vidyaranyapuram": "14",
+"Vijayanagar Water Tank": "1, 2",
+"Visweshwaranagar": "14",
+"Vontikoppal": "1, 2",
+"Zoo": "23"
+
+};
+    
+    
+        $("#mainb").show("");
+   let N = document.getElementById('name').value;
+    if (busNo[N]) {
+        document.getElementById('bn').innerText = busNo[N];
+       document.getElementById('pn').innerText = busPt[N];
+    } else {
+      
+        document.getElementById('bn').innerText = "Not Found";
+        document.getElementById('pn').innerText = "Not Found";
+        
+}
+    });
+    
+    $("#cl").click(function(){
+        $("#name").val("");
+        $("#mainb").hide("");
+    });
+    
+    $("#help").click(function(){
+         $(".card").show("");
+     });
+     
+     $("#clhl").click(function(){
+         $(".card").hide("");
+     });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
